@@ -1,0 +1,30 @@
+{
+  "name": "playlyfe-node-sdk",
+  "version": "v0.0.1",
+  "description": "Playlyfe SDK for NodeJS",
+  "keywords": ["playlyfe", "auth", "authentication", "identity", "oauth", "api", "sdk"],
+  "homepage": "http://dev.playlyfe.com",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/playlyfe/playlyfe-node-sdk.git"
+  },
+  "bugs": {
+    "url": "http://github.com/playlyfe/playlyfe-node-sdk/issues"
+  },
+  "author": {
+    "name": "Johny Jose",
+    "email": "johny@playlyfe.com",
+    "url": "http://blog.playlyfe.com"
+  },
+  "licenses": [{
+    "type": "MIT",
+    "url": "http://www.opensource.org/licenses/MIT"
+  }],
+  "main": "./lib",
+  "dependencies": {
+    "oauth": "git://github.com/atrniv/node-oauth.git"
+  },
+  "engines": {
+    "node": ">=0.8.18"
+  }
+}
