@@ -81,7 +81,7 @@ This is the recommended way to go for most users. For a complete example impleme
       res.header("Pragma", "no-cache");
       res.header("Expires", 0);
       req.playlyfe.api(
-        req.params[0],
+        '/' + req.params[0],
         req.route.method.toUpperCase(),
         req.body,
         function(err, result, response) {
@@ -116,7 +116,7 @@ These values can be found in the clients menu in the game builder on the [Playly
       redirectURI: 'REDIRECT_URI'
     }
 
-The redirect URI must match exactly with any of the registered redirect endpoints or the oauth flow will fail. 
+The redirect URI must match exactly with any of the registered redirect endpoints or the oauth flow will fail.
 
 ### connect()
 
@@ -131,7 +131,7 @@ Attaches helper methods to a request object for easier access within routes.
 
 ## Request Helper Methods
 
-These methods are attached to the request object and can be accessed inside application routes using the playlyfe key on the request. 
+These methods are attached to the request object and can be accessed inside application routes using the playlyfe key on the request.
 
 ####Example
     Playlyfe = require('playlyfe-node-sdk')
@@ -140,8 +140,8 @@ These methods are attached to the request object and can be accessed inside appl
     app.use(Playlyfe.connect(config));
     ...
     ...
-    app.get('/logout', function(req, res) { 
-       req.playlyfe.logout('http://www.google.com'); 
+    app.get('/logout', function(req, res) {
+       req.playlyfe.logout('http://www.google.com');
     }
 
 
@@ -152,21 +152,21 @@ Executes an API call. Visit the complete [API reference](http://dev.playlyfe.com
 Logout the user from Playlyfe and then redirect to the provided 'next' url.
 
 ## License
-    
+
     Playlyfe NodeJS SDK v0.0.1
     http://dev.playlyfe.com/
     Copyright(c) 2013-2014, Playlyfe Technologies, developers@playlyfe.com
-    
+
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
     in the Software without restriction, including without limitation the rights
     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
     copies of the Software, and to permit persons to whom the Software is
     furnished to do so, subject to the following conditions:
-    
+
     The above copyright notice and this permission notice shall be included in
     all copies or substantial portions of the Software.
-    
+
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -174,4 +174,4 @@ Logout the user from Playlyfe and then redirect to the provided 'next' url.
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
-    
+
