@@ -1,6 +1,6 @@
 {
   "name": "playlyfe-node-sdk",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Playlyfe SDK for NodeJS",
   "keywords": [
     "playlyfe",
@@ -32,9 +32,6 @@
   ],
   "main": "./lib",
   "dependencies": {
-    "oauth": "git://github.com/atrniv/node-oauth.git"
-  },
-  "engines": {
-    "node": ">=0.8.18"
+    "oauth": "git+https://github.com/atrniv/node-oauth.git"
   }
 }
