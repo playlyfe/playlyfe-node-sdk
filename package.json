@@ -1,6 +1,6 @@
 {
   "name": "playlyfe-node-sdk",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Playlyfe SDK for NodeJS",
   "keywords": [
     "playlyfe",
