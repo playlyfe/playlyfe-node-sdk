@@ -24,6 +24,13 @@
     "email": "johny@playlyfe.com",
     "url": "http://blog.playlyfe.com"
   },
+  "contributors": [
+    {
+      "name": "Kumar Harsh",
+      "email": "khs@playlyfe.com",
+      "url": "http://github.com/kumarharsh"
+    }
+  ],
   "licenses": [
     {
       "type": "MIT",
@@ -33,5 +40,9 @@
   "main": "./lib",
   "dependencies": {
     "oauth": "git+https://github.com/atrniv/node-oauth.git"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.6.3",
+    "coffeelint": "~1.0.3"
   }
 }
