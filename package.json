@@ -1,6 +1,6 @@
 {
   "name": "playlyfe-node-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Playlyfe SDK for NodeJS",
   "keywords": [
     "playlyfe",
@@ -24,14 +24,28 @@
     "email": "johny@playlyfe.com",
     "url": "http://blog.playlyfe.com"
   },
+  "contributors": [
+    {
+      "name": "Kumar Harsh",
+      "email": "khs@playlyfe.com",
+      "url": "http://github.com/kumarharsh"
+    }
+  ],
   "licenses": [
     {
       "type": "MIT",
       "url": "http://www.opensource.org/licenses/MIT"
     }
   ],
-  "main": "./lib",
+  "main": "./lib/playlyfe-node-sdk",
+  "scripts": {
+    "prepublish": "./node_modules/.bin/coffeelint src/ && ./node_modules/.bin/coffee -o lib -cb src/playlyfe-node-sdk.coffee"
+  },
   "dependencies": {
     "oauth": "git+https://github.com/atrniv/node-oauth.git"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.6.3",
+    "coffeelint": "~1.0.3"
   }
 }
