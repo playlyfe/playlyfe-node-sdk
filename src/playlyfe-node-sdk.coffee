@@ -25,13 +25,37 @@ class Playlyfe
     @client.AuthCode.getToken({
       code: code
       redirect_uri: @options.redirect_uri
-    }, (err, result) =>
+    }, (err, result) ->
       if err
         saveToken(err)
       else
-        token = @client.AccessToken.create(result)
+        token = result
+        token.expires_at = new Date(
+          new Date().getTime() + (parseInt(token.expires_in) * 1000)
+        )
         saveToken(null, token)
     )
+
+  isAccessTokenExpired: (token) ->
+    new Date() > new Date(token.expires_at)
+
+  refreshAccessToken: (token, callback) ->
+    if (token.locked)
+      token.callbacks.push callback
+    else
+      token.locked = true
+      token.callbacks = [callback]
+      @client.AccessToken.create(token).refresh((err, result) ->
+        if err
+          _.forEach(token.callbacks, (fn) -> fn(err))
+          delete token.locked
+          delete token.callbacks
+        else
+          _.forEach(token.callbacks, (fn) -> fn(null, result.token))
+          delete token.locked
+          delete token.callbacks
+      )
+    return
 
   api: (url, method, data = {}, access_token, callback) ->
     data = _.defaults data, {
