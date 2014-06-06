@@ -1,6 +1,6 @@
 {
   "name": "playlyfe-node-sdk",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Playlyfe SDK for NodeJS",
   "keywords": [
     "playlyfe",
@@ -42,7 +42,7 @@
     "prepublish": "./node_modules/.bin/coffeelint src/ && ./node_modules/.bin/coffee -o lib -cb src/playlyfe-node-sdk.coffee"
   },
   "dependencies": {
-    "simple-oauth2": "0.1.9",
+    "simple-oauth2": "git://github.com/atrniv/simple-oauth2.git#b254ac0b0432430ae0dbf04b9d92f1bb057f74fe",
     "request": "2.34",
     "lodash": "2.4.1"
   },

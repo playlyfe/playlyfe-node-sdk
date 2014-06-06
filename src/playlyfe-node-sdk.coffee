@@ -11,6 +11,8 @@ class Playlyfe
       site: "http://playlyfe.com"
       authorizationPath: "/auth"
       tokenPath: "/auth/token"
+      proxy: @options.proxy
+      auth: @options.auth
     })
     @endpoint = @options.endpoint ? "http://api.playlyfe.com/v1"
     return
@@ -65,7 +67,7 @@ class Playlyfe
     data.qs.access_token = access_token
     if @options.player_id then data.qs.player_id = @options.player_id
 
-    request({
+    request(_.extend(_.pick(@options, 'proxy', 'auth'), {
       url: "#{@endpoint}#{url}"
       method: method.toUpperCase()
       qs: data.qs
@@ -73,7 +75,7 @@ class Playlyfe
         'Content-Type': 'application/json'
       body: JSON.stringify(data.body)
       encoding: null
-    }, callback)
+    }), callback)
     return
 
 module.exports = Playlyfe
