@@ -62,7 +62,11 @@ class Playlyfe
     new Date() > new Date(token.expires_at)
 
   refreshAccessToken: (token, callback) ->
-    @client.AccessToken.create(token).refresh(callback)
+    switch @options.type
+      when 'code'
+        @client.AccessToken.create(token).refresh(callback)
+      when 'client'
+        @client.Client.getToken({}, callback)
     return
 
   api: (url, method, data = {}, access_token, callback) ->
