@@ -121,7 +121,7 @@ Executes an API call. This method differs from the request helper in requiring t
 
     Playlyfe NodeJS SDK v0.0.1
     http://dev.playlyfe.com/
-    Copyright(c) 2013-2014, Playlyfe Technologies, developers@playlyfe.com
+    Copyright(c) 2013-2014, Playlyfe IT Solutions Pvt. Ltd, support@playlyfe.com  
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
