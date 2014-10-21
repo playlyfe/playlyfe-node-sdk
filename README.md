@@ -1,4 +1,6 @@
-Playlyfe Node SDK
+![Playlyfe Node SDK](./images/pl-node-sdk.png "Playlyfe Node SDK")
+
+Playlyfe Node SDK [![NPM version](https://badge.fury.io/js/playlyfe-node-sdk.svg)](http://badge.fury.io/js/playlyfe-node-sdk)
 =================
 
 Playlyfe API implementation in NodeJS. This module integrates seamlessly with the [passport-playlyfe](https://github.com/playlyfe/passport-playlyfe) module for authentication support.
@@ -109,7 +111,7 @@ These values can be found in the clients menu in the game builder on the [Playly
 The redirect URI must match exactly with any of the registered redirect endpoints or the oauth flow will fail.
 
 ### getAuthorizationURI
-Get the Authorization URI for the app. 
+Get the Authorization URI for the app.
 
 ### getToken (code, saveTokenFunction)
 Exchange the Authorization Code for Access Token.
@@ -121,7 +123,7 @@ Executes an API call. This method differs from the request helper in requiring t
 
     Playlyfe NodeJS SDK v0.0.1
     http://dev.playlyfe.com/
-    Copyright(c) 2013-2014, Playlyfe IT Solutions Pvt. Ltd, support@playlyfe.com  
+    Copyright(c) 2013-2014, Playlyfe IT Solutions Pvt. Ltd, support@playlyfe.com
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -140,4 +142,3 @@ Executes an API call. This method differs from the request helper in requiring t
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
-
