@@ -121,7 +121,7 @@ Executes an API call. This method differs from the request helper in requiring t
 
 ## License
 
-    Playlyfe NodeJS SDK v0.0.1
+    Playlyfe NodeJS SDK
     http://dev.playlyfe.com/
     Copyright(c) 2013-2014, Playlyfe IT Solutions Pvt. Ltd, support@playlyfe.com
 
