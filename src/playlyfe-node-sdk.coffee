@@ -6,6 +6,7 @@ class Playlyfe
 
   constructor: (@options) ->
     @options.type ?= 'code'
+    @options.version ?= 'v2'
     @client = OAuth2({
       clientID: @options.client_id
       clientSecret: @options.client_secret
@@ -15,7 +16,7 @@ class Playlyfe
       proxy: @options.proxy
       strictSSL: @options.strictSSL
     })
-    @endpoint = @options.endpoint ? "https://api.playlyfe.com/v1"
+    @endpoint = @options.endpoint ? "https://api.playlyfe.com/#{@options.version}"
     return
 
   getAuthorizationURI: () ->

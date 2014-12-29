@@ -9,6 +9,8 @@ Visit the complete [API reference](http://dev.playlyfe.com/docs/api)
 
 To learn more about how you can build applications on Playlyfe visit the [official developer documentation](http://dev.playlyfe.com)
 
+> Note: Breaking Changes this is the new version of the sdk which uses the Playlyfe api v2 by default if you still want to use the v1 api you can do that so by passing a version key in the options when creating a client with 'v1' as the value
+
 
 ##Install
 To get started simply run
@@ -27,7 +29,8 @@ Playlyfe = require('playlyfe-node-sdk')
 var config = {
   client_id: 'YOUR CLIENT ID',
   client_secret: 'YOUR CLIENT SECRET',
-  redirect_uri: 'http://localhost:8080/auth/redirect'
+  redirect_uri: 'http://localhost:8080/auth/redirect',
+  version: 'v1'
 };
 
 client = new Playlyfe(config);
