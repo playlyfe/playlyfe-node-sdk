@@ -39,7 +39,8 @@
   ],
   "main": "./lib/playlyfe-node-sdk",
   "scripts": {
-    "prepublish": "./node_modules/.bin/coffeelint src/ && ./node_modules/.bin/coffee -o lib -cb src/playlyfe-node-sdk.coffee"
+    "prepublish": "./node_modules/.bin/coffeelint src/ && ./node_modules/.bin/coffee -o lib -cb src/playlyfe-node-sdk.coffee",
+    "test": "coffee ./test/test.coffee"
   },
   "dependencies": {
     "simple-oauth2": "git://github.com/atrniv/simple-oauth2.git#7e8a7ba73bcb40761d392bf969f3d34f66b3f509",
