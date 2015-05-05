@@ -1,6 +1,6 @@
 {
   "name": "playlyfe-node-sdk",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Playlyfe SDK for NodeJS",
   "keywords": [
     "playlyfe",
@@ -39,88 +39,16 @@
   ],
   "main": "./lib/playlyfe-node-sdk",
   "scripts": {
-    "prepublish": "./node_modules/.bin/coffeelint src/ && ./node_modules/.bin/coffee -o lib -cb src/playlyfe-node-sdk.coffee",
-    "test": "coffee ./test/test.coffee"
+    "prepublish": "./node_modules/.bin/coffee -o lib -cb src/playlyfe-node-sdk.coffee",
+    "test": "mocha -R spec --timeout 7000 --compilers coffee:coffee-script/register"
   },
   "dependencies": {
-    "simple-oauth2": "git://github.com/atrniv/simple-oauth2.git#7e8a7ba73bcb40761d392bf969f3d34f66b3f509",
-    "request": "2.34",
-    "lodash": "2.4.1"
+    "request-promise": "0.4.2",
+    "lodash": "2.4.1",
+    "bluebird": "2.9.25"
   },
   "devDependencies": {
-    "bluebird": "^2.5.1",
-    "coffee-script": "~1.6.3",
-    "coffeelint": "~1.0.3"
-  },
-  "coffeelintConfig": {
-    "coffeescript_error": {
-      "level": "error"
-    },
-    "no_tabs": {
-      "name": "no_tabs",
-      "level": "error"
-    },
-    "no_trailing_whitespace": {
-      "name": "no_trailing_whitespace",
-      "level": "error",
-      "allowed_in_comments": false,
-      "allowed_in_empty_lines": true
-    },
-    "max_line_length": {
-      "name": "max_line_length",
-      "value": 80,
-      "level": "error",
-      "limitComments": true
-    },
-    "no_trailing_semicolons": {
-      "name": "no_trailing_semicolons",
-      "level": "error"
-    },
-    "indentation": {
-      "name": "indentation",
-      "value": 2,
-      "level": "error"
-    },
-    "arrow_spacing": {
-      "name": "arrow_spacing",
-      "level": "warn"
-    },
-    "colon_assignment_spacing": {
-      "name": "colon_assignment_spacing",
-      "level": "ignore",
-      "spacing": {
-        "left": 0,
-        "right": 1
-      }
-    },
-    "no_implicit_braces": {
-      "name": "no_implicit_braces",
-      "level": "ignore",
-      "strict": true
-    },
-    "no_throwing_strings": {
-      "name": "no_throwing_strings",
-      "level": "error"
-    },
-    "no_backticks": {
-      "name": "no_backticks",
-      "level": "error"
-    },
-    "duplicate_key": {
-      "name": "duplicate_key",
-      "level": "error"
-    },
-    "no_unnecessary_fat_arrows": {
-      "name": "no_unnecessary_fat_arrows",
-      "level": "warn"
-    },
-    "no_stand_alone_at": {
-      "name": "no_stand_alone_at",
-      "level": "warn"
-    },
-    "no_interpolation_in_single_quotes": {
-      "name": "no_interpolation_in_single_quotes",
-      "level": "warn"
-    }
+    "coffee-script": "1.9.2",
+    "mocha": "1.17.1"
   }
 }

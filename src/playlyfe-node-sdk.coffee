@@ -1,5 +1,5 @@
-OAuth2 = require 'simple-oauth2'
-request = require 'request'
+request = require 'request-promise'
+Promise = require 'bluebird'
 _ = require 'lodash'
 
 class Playlyfe
@@ -7,19 +7,14 @@ class Playlyfe
   constructor: (@options) ->
     @options.type ?= 'code'
     @options.version ?= 'v2'
-    @client = OAuth2({
-      clientID: @options.client_id
-      clientSecret: @options.client_secret
-      site: "https://playlyfe.com"
-      authorizationPath: "/auth"
-      tokenPath: "/auth/token"
-      proxy: @options.proxy
-      strictSSL: @options.strictSSL
-    })
-    @endpoint = @options.endpoint ? "https://api.playlyfe.com/#{@options.version}"
+    @options.store ?= (access_token) =>
+      @access_token = access_token
+      Promise.resolve()
+    @options.load ?= =>
+      Promise.resolve(@access_token)
     return
 
-  getAuthorizationURI: () ->
+  getAuthorizationURI: ->
     switch @options.type
       when 'code'
         @client.AuthCode.authorizeURL({
@@ -29,72 +24,84 @@ class Playlyfe
       else
         throw new Error("No Authorization URI available for this oauth 2 flow")
 
-  getToken: (code, saveToken) ->
-    switch @options.type
-      when 'code'
-        @client.AuthCode.getToken({
-          code: code
-          redirect_uri: @options.redirect_uri
-        }, (err, result) ->
-          if err
-            saveToken(err)
-          else
-            token = result
-            token.expires_at = new Date(
-              new Date().getTime() + (parseInt(token.expires_in) * 1000)
-            )
-            saveToken(null, token)
-        )
-      when 'client'
-        saveToken = code
-        @client.Client.getToken({}, (err, result) ->
-          if err
-            saveToken(err)
-          else
-            token = result
-            token.expires_at = new Date(
-              new Date().getTime() + (parseInt(token.expires_in) * 1000)
-            )
-            saveToken(null, token)
-        )
-    return
+  getAccessToken: (code) ->
+    request({
+      url: 'https://playlyfe.com/auth/token'
+      method: 'POST'
+      qs: {}
+      body: {
+        client_id: @options.client_id
+        client_secret: @options.client_secret
+        grant_type: 'client_credentials'
+      }
+      strictSSL: true
+      json: true
+      encoding: 'utf8'
+    })
+    .then (token) =>
+      token.expires_at = new Date(new Date().getTime() + (parseInt(token.expires_in) * 1000))
+      @options.store(token)
+      .then ->
+        Promise.resolve(token)
+    # switch @options.type
+    #   when 'code'
+    #     key = 'AuthCode'
+    #     params = {
+    #       code: code
+    #       redirect_uri: @options.redirect_uri
+    #     }
+    #   when 'client'
+    #     key = 'Client'
+    #     params = {}
+    # @client[key].getToken(params)
+    # .then (token) ->
+    #
+    #   @options.store(token)
 
-  isAccessTokenExpired: (token) ->
-    new Date() > new Date(token.expires_at)
-
-  refreshAccessToken: (token, callback) ->
-    switch @options.type
-      when 'code'
-        @client.AccessToken.create(token).refresh(callback)
-      when 'client'
-        @client.Client.getToken({}, callback)
-    return
-
-  api: (url, method, data = {}, access_token, callback) ->
-    data = _.defaults data, {
-      qs: {},
-      body: {}
-    }
-    data.qs.access_token = access_token
-    if @options.player_id then data.qs.player_id = @options.player_id
-    request(_.extend(_.pick(@options, 'proxy', 'auth', 'strictSSL'), {
-      url: "#{@endpoint}#{url}"
-      method: method.toUpperCase()
-      qs: data.qs
-      headers:
-        'Content-Type': 'application/json'
-      body: JSON.stringify(data.body)
-      encoding: null
-    }), (err, response) ->
-      if err
-        callback(err)
-      else if /application\/json/.test(response.headers['content-type'])
-        callback(null, JSON.parse(response.body.toString()), response)
-      else if /^image\//.test(response.headers['content-type'])
-        callback(null, response.body, response)
+  api: (url, method, query = {}, body = {}) ->
+    if @options.player_id then query.player_id = @options.player_id
+    @options.load()
+    .then (token) =>
+      unless token?
+        @getAccessToken()
+      else if new Date() > new Date(token.expires_at)
+        @getAccessToken()
       else
-        callback(null, response.body, response)
-    )
-    return
+        Promise.resolve(token)
+    .then (token) =>
+      query.access_token = token.access_token
+      @makeRequest(url, method, query, body)
+
+  get: (url, query) ->
+    @api(url, 'GET', query)
+
+  post: (url, query, body) ->
+    @api(url, 'POST', query, body)
+
+  patch: (url, query, body) ->
+    @api(url, 'PATCH', query, body)
+
+  put: (url, query, body) ->
+    @api(url, 'PUT', query, body)
+
+  delete: (url, query) ->
+    @api(url, 'DELETE', query)
+
+  makeRequest: (url, method, query, body, raw=false) ->
+    request({
+      url: "https://api.playlyfe.com/#{@options.version}#{url}"
+      method: method.toUpperCase()
+      qs: query
+      headers: 'Content-Type': 'application/json'
+      body: JSON.stringify(body)
+      strictSSL: true
+      encoding: 'utf8'
+      json: not raw
+    })
+    .catch (err) ->
+      if typeof err.response?.body is 'object'
+        Promise.reject(err.response.body)
+      else
+        Promise.reject(err)
 
 module.exports = Playlyfe
