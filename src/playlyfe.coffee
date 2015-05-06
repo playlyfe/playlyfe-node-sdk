@@ -8,11 +8,8 @@ class Playlyfe
     if _.isUndefined @options then throw new Error('You must pass in options')
     if _.isUndefined @options.type then throw new Error('You must pass in type which can be code or client')
     if not _.contains(['code', 'client'], @options.type) then throw new Error('You must pass in type which can be code or client')
-    if @options.type is 'code'
-      if _.isUndefined @options.redirect_uri then throw new Error('You must pass in a redirect_uri for authoriztion code flow')
+    if @options.type is 'code' and _.isUndefined @options.redirect_uri then throw new Error('You must pass in a redirect_uri for authoriztion code flow')
     if _.isUndefined @options.version then throw new Error( 'You must pass in version of the API you would like to use which can be v1 or v2')
-    @code = null
-    @refresh_token = null
     @options.strictSSL ?= true
     @options.store ?= (access_token) =>
       @access_token = access_token
@@ -49,6 +46,9 @@ class Playlyfe
       .then ->
         Promise.resolve(token)
 
+  exchangeCode: (code) ->
+    @getAccessToken(code)
+
   getAccessToken: (code) ->
     body = {
       client_id: @options.client_id
@@ -56,17 +56,17 @@ class Playlyfe
       grant_type: 'client_credentials'
     }
     if @options.type is 'code'
-      body.grant_type = 'authorization_code'
-      body.redirect_uri = @options.redirect_uri
-      if code?
-        body.code = code
-        @makeTokenRequest(body)
-      else
-        body.grant_type = 'refresh_token'
-        @options.load()
-        .then (token) =>
+      @options.load()
+      .then (token) =>
+        if token?
+          body.grant_type = 'refresh_token'
           body.refresh_token = token.refresh_token
           @makeTokenRequest(body)
+        else
+          body.grant_type = 'authorization_code'
+          body.redirect_uri = @options.redirect_uri
+          body.code = code
+        @makeTokenRequest(body)
     else
       @makeTokenRequest(body)
 
@@ -75,7 +75,10 @@ class Playlyfe
     @options.load()
     .then (token) =>
       unless token?
-        @getAccessToken()
+        if @options.type is 'code'
+          Promise.reject(error: "Initialize the Authorization Code Flow by exchanging the code")
+        else
+          @getAccessToken()
       else if new Date() > new Date(token.expires_at)
         @getAccessToken()
       else

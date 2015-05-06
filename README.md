@@ -38,6 +38,12 @@ pl.get('/player',{ player_id: 'johny' })
 .catch(function() {
     console.log('Error');
 });
+
+pl.post("/definitions/processes/collect", { 'player_id': 'johny' }, { 'name': 'My First Process' })
+.then(function(process) {
+    console.log(process);
+});
+
 ```
 ### Callbacks
 ```js
@@ -46,6 +52,10 @@ pl.get('/player', { player_id: 'johny' }, false, function(err, player) {
      console.log('Error');
     }
     console.log(player);
+});
+
+pl.post("/definitions/processes/collect", { 'player_id': 'johny' }, { 'name': 'My First Process' }, function(err, process) {
+    console.log(process);
 });
 ```
 
@@ -63,7 +73,7 @@ pl.get('/player', { player_id: 'johny' }, false, function(err, player) {
 And then note down the client id and client secret you will need it later for using it in the sdk
 
 ## 1. Client Credentials Flow
-A typical flask app using client credentials code flow with a single route would look something like this
+A typical express application should contain something like this
 ```js
 var Playlyfe =  require('playlyfe')
 var pl = new Playlyfe({
@@ -84,6 +94,13 @@ var pl = new Playlyfe({
     redirect_uri: 'https://playlyfe.com/redirect'
 });
 ```
+
+In this Flow you need to pass in the authorization code to the sdk by calling 
+```js 
+exchangeCode(code)
+```
+atleast once. After this you can make any requests as the user has to be authenticated first.
+
 
 # Documentation
 You can initiate a client by giving the client_id and client_secret params
@@ -120,7 +137,8 @@ var pl = new Playlyfe({
     version: 'v1',
     store: function(access_token) {
         redis.hmset("access_token", access_token)
-        Promise.resolve()
+        .then ->
+            Promise.resolve()
     }, 
     load: function() {
         redis.hmgetall("access_token")
@@ -155,13 +173,21 @@ put(route, query, body, callback)
 ```
 **Delete**
 ```js
-post(route, query, callback)
+delete(route, query, callback)
 ```
 **Get Login Url**
 ```js
 getAuthorizationURI()
 //This will return the url to which the user needs to be redirected to login.
 ```
+***Exchange Code***
+```js
+exchangeCode(code)
+//This is used in the auth code flow so that the sdk can get the access token.
+//Before any request to the playlyfe api is made this has to be called atleast once.
+//This should be called in the the route/controller which you specified in your redirect_uri
+```
+
 
 License
 =======
