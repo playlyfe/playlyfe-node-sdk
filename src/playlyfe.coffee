@@ -5,11 +5,15 @@ _ = require 'lodash'
 class Playlyfe
 
   constructor: (@options) ->
+    if _.isUndefined @options then throw new Error('You must pass in options')
     if _.isUndefined @options.type then throw new Error('You must pass in type which can be code or client')
     if not _.contains(['code', 'client'], @options.type) then throw new Error('You must pass in type which can be code or client')
     if @options.type is 'code'
       if _.isUndefined @options.redirect_uri then throw new Error('You must pass in a redirect_uri for authoriztion code flow')
     if _.isUndefined @options.version then throw new Error( 'You must pass in version of the API you would like to use which can be v1 or v2')
+    @code = null
+    @refresh_token = null
+    @options.strictSSL ?= true
     @options.store ?= (access_token) =>
       @access_token = access_token
       Promise.resolve()
@@ -27,7 +31,7 @@ class Playlyfe
       qs: query
       headers: 'Content-Type': 'application/json'
       body: JSON.stringify(body)
-      strictSSL: true
+      strictSSL: @options.strictSSL
       encoding: 'utf8'
       json: not raw
     })
@@ -66,7 +70,7 @@ class Playlyfe
     else
       @makeTokenRequest(body)
 
-  api: (method, url, query = {}, body = {}, raw=false) ->
+  api: (method, url, query = {}, body = {}, raw=false, cb=null) ->
     if @options.player_id then query.player_id = @options.player_id
     @options.load()
     .then (token) =>
@@ -78,12 +82,15 @@ class Playlyfe
         Promise.resolve(token)
     .then (token) =>
       query.access_token = token.access_token
-      @makeRequest("https://api.playlyfe.com/#{@options.version}#{url}", method, query, body, raw)
+      if cb?
+        @makeRequest("https://api.playlyfe.com/#{@options.version}#{url}", method, query, body, raw).nodeify(cb)
+      else
+        @makeRequest("https://api.playlyfe.com/#{@options.version}#{url}", method, query, body, raw)
 
-  get: (url, query, raw) -> @api('GET', url, query, {}, raw)
-  post: (url, query, body) -> @api('POST', url, query, body)
-  patch: (url, query, body) -> @api('PATCH', url, query, body)
-  put: (url, query, body) -> @api('PUT', url, query, body)
-  delete: (url, query) -> @api('DELETE', url, query)
+  get: (url, query, raw, cb) -> @api('GET', url, query, {}, raw, cb)
+  post: (url, query, body, cb) -> @api('POST', url, query, body, false, cb)
+  patch: (url, query, body, cb) -> @api('PATCH', url, query, body, false, cb)
+  put: (url, query, body, cb) -> @api('PUT', url, query, body, false, cb)
+  delete: (url, query, cb) -> @api('DELETE', url, query, {}, false, cb)
 
 module.exports = Playlyfe

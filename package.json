@@ -37,9 +37,9 @@
       "url": "http://www.opensource.org/licenses/MIT"
     }
   ],
-  "main": "./lib/playlyfe-node-sdk",
+  "main": "./lib/playlyfe",
   "scripts": {
-    "prepublish": "./node_modules/.bin/coffee -o lib -cb src/playlyfe-node-sdk.coffee",
+    "prepublish": "./node_modules/.bin/coffee -o lib -cb src/playlyfe.coffee",
     "test": "mocha -R spec --timeout 20000 --compilers coffee:coffee-script/register"
   },
   "dependencies": {

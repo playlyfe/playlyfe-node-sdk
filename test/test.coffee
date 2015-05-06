@@ -1,4 +1,4 @@
-Playlyfe = require '../src/playlyfe-node-sdk'
+Playlyfe = require '../src/playlyfe'
 assert = require 'assert'
 Promise = require 'bluebird'
 
@@ -163,6 +163,11 @@ describe 'The v2 API', ->
   it 'should read all players', (next) ->
     @pl.get('/admin/players')
     .then (players) ->
+      assert(players.data.length > 0)
+      next()
+
+  it 'should read all players with cb', (next) ->
+    @pl.get '/admin/players', {}, false, (err, players) ->
       assert(players.data.length > 0)
       next()
 
