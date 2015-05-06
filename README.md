@@ -12,27 +12,123 @@ To learn more about how you can build applications on Playlyfe visit the [offici
 ##Install
 To get started simply run
 
+```sh
+npm install playlyfe
 ```
-npm install playlyfe-node-sdk
+
+The Playlyfe class allows you to make rest api calls like GET, POST, .. etc
+```js
+var Playlyfe =  require('playlyfe')
+var pl = new Playlyfe({
+    type: 'client'
+    version: 'v1',
+    client_id: "Your client id",
+    client_secret: "Your client secret"
+});
+```
+You can use either promises or callbacks
+***Promises***
+```js
+// To get infomation of the player johny
+pl.get('/player',{ player_id: 'johny' }) 
+.then(function(player) {
+    console.log(player);
+})
+.catch(function() {
+    console.log('Error');
+});
+```
+***Callbacks***
+```js
+pl.get('/player', { player_id: 'johny' }, false, function(err, player) {
+    if(err) {
+     console.log('Error');
+    }
+    console.log(player);
+});
+```
+
+## Using
+### Create a client
+  If you haven't created a client for your game yet just head over to [Playlyfe](http://playlyfe.com) and login into your account, and go to the game settings and click on client
+  **1.Client Credentials Flow**
+    In the client page click on whitelabel client
+    ![Creating a Whitelabel Client](./images/client.png "Creating a Whitelabel Client")
+
+  **2.Authorization Code Flow**
+    In the client page click on backend client and specify the redirect uri this will be the url where you will be redirected to get the token
+    ![Creating a Backend Client](./images/auth.png "Creating a Backend Client")
+
+And then note down the client id and client secret you will need it later for using it in the sdk
+
+## 1. Client Credentials Flow
+A typical flask app using client credentials code flow with a single route would look something like this
+```js
+var Playlyfe =  require('playlyfe')
+var pl = new Playlyfe({
+    type: 'client'
+    version: 'v1',
+    client_id: "Your client id",
+    client_secret: "Your client secret"
+});
+```
+## 2. Authorization Code Flow
+```js
+var Playlyfe =  require('playlyfe')
+var pl = new Playlyfe({
+    type: 'code'
+    version: 'v1',
+    client_id: "Your client id",
+    client_secret: "Your client secret",
+    redirect_uri: 'https://playlyfe.com/redirect'
+});
 ```
 
 # Documentation
 You can initiate a client by giving the client_id and client_secret params
 ```js
-new Playlyfe({
+var Playlyfe = require('playlyfe');
+var pl = new Playlyfe({
     type: 'client' or 'code',
     client_id: 'Your client id',
     client_secret: 'Your client Secret',
     version: 'v1',
     redirect_uri: 'The url to redirect to', //only for auth code flow
-    store: function() {}, // The lambda which will persist the access token to a database. You have to persist the token to a database if you want the access token to remain the same in every request
-    load: function() {}, // The lambda which will load the access token. This is called internally by the sdk on every request so the 
-    //the access token can be persisted between requests
+    store: function(access_token) {
+        // The function which will persist the access token to a database. You have to persist the token to a database if you want the access token to remain the same in every request
+    }, 
+    load: function() {
+        // The function which will load the access token. This is called internally by the sdk on every request so the the access token can be persisted between requests
+        //return the access_token here
+    }, 
     strictSSL: true
-})
+});
 ```
 
 In development the sdk caches the access token in memory so you dont need to provide the store and load functions. But in production it is highly recommended to persist the token to a database. It is very simple and easy to do it with redis. You can see the test cases for more examples.
+
+```js
+var Playlyfe = require('playlyfe');
+var redis = require('ioredis');
+var Promise = require('bluebird');
+
+var pl = new Playlyfe({
+    type: 'client' or 'code',
+    client_id: 'Your client id',
+    client_secret: 'Your client Secret',
+    version: 'v1',
+    store: function(access_token) {
+        redis.hmset("access_token", access_token)
+        Promise.resolve()
+    }, 
+    load: function() {
+        redis.hmgetall("access_token")
+        .then (access_token) ->
+            Promise.resolve(access_token)
+    }, 
+    strictSSL: true
+});
+```
 
 **API**
 All these methods return a bluebird Promise if you don't pass a callback.
@@ -42,7 +138,7 @@ api(method, route, query, body, raw, callback)
 ```
 **Get**
 ```js
-get(route, query, body, raw, callback)
+get(route, query, raw, callback)
 ```
 **Post**
 ```js
@@ -63,7 +159,7 @@ post(route, query, callback)
 **Get Login Url**
 ```js
 getAuthorizationURI()
-//This will return the url to which the user needs to be redirected for the user to login. You can use this directly in your views.
+//This will return the url to which the user needs to be redirected to login.
 ```
 
 License
