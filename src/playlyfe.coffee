@@ -27,7 +27,7 @@ class Playlyfe
       method: method.toUpperCase()
       qs: query
       headers: 'Content-Type': 'application/json'
-      body: JSON.stringify(body)
+      body: body
       strictSSL: @options.strictSSL
       encoding: 'utf8'
       json: not raw
