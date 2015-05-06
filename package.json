@@ -40,7 +40,7 @@
   "main": "./lib/playlyfe-node-sdk",
   "scripts": {
     "prepublish": "./node_modules/.bin/coffee -o lib -cb src/playlyfe-node-sdk.coffee",
-    "test": "mocha -R spec --timeout 7000 --compilers coffee:coffee-script/register"
+    "test": "mocha -R spec --timeout 20000 --compilers coffee:coffee-script/register"
   },
   "dependencies": {
     "request-promise": "0.4.2",

@@ -7,19 +7,46 @@ access_token = null
 
 describe 'The SDK', ->
 
+  it 'should check whether right options are passed', (next) ->
+    try
+      pl = new Playlyfe({
+        client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
+        client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
+        redirect_uri: 'https://playlyfe.com/mygame'
+      })
+    catch err
+      assert.equal err.message, 'You must pass in type which can be code or client'
+      try
+        pl = new Playlyfe({
+          type: 'code'
+          client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
+          client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
+        })
+      catch err
+        assert.equal err.message, 'You must pass in a redirect_uri for authoriztion code flow'
+        try
+          pl = new Playlyfe({
+            type: 'code'
+            client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
+            client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
+            redirect_uri: 'https://playlyfe.com/mygame'
+          })
+        catch err
+          assert.equal err.message, 'You must pass in version of the API you would like to use which can be v1 or v2'
+          next()
+
   it 'should reload the access token', (next) ->
     pl = new Playlyfe({
       type: 'client',
       client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
       client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
-      redirect_uri: 'http://localhost:8080/auth/redirect',
       version: 'v1'
       store: (token) ->
         console.log 'Storing' # Storing is called only once
         access_token = token
         Promise.resolve(access_token)
       load: ->
-        console.log 'Loading', access_token
+        console.log 'Loading'
         Promise.resolve(access_token)
     })
     pl.get('/gege', player)
@@ -35,7 +62,6 @@ describe 'The SDK', ->
       type: 'client',
       client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
       client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
-      redirect_uri: 'http://localhost:8080/auth/redirect',
       version: 'v1'
       store: (token) ->
         console.log 'Storing'
@@ -55,6 +81,20 @@ describe 'The SDK', ->
       assert.equal(err.error, 'route_not_found')
       next()
 
+  it 'should check the login uri', (next) ->
+    pl = new Playlyfe({
+      type: 'code',
+      client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
+      client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
+      version: 'v1'
+      redirect_uri: 'https://playlyfe.com/mygame'
+    })
+    assert.equal(
+      "https://playlyfe.com/auth?response_type=code&redirect_uri=https%3A%2F%2Fplaylyfe.com%2Fmygame&client_id=Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
+      pl.getAuthorizationURI()
+    )
+    next()
+
 describe 'The v1 API', ->
 
   before (next) ->
@@ -62,9 +102,8 @@ describe 'The v1 API', ->
       type: 'client',
       client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
       client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
-      redirect_uri: 'http://localhost:8080/auth/redirect',
       version: 'v1'
-    });
+    })
     next()
 
   it 'should get an error on unknown route', (next) ->
@@ -117,7 +156,6 @@ describe 'The v2 API', ->
       type: 'client',
       client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
       client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
-      redirect_uri: 'http://localhost:8080/auth/redirect',
       version: 'v2'
     });
     next()
