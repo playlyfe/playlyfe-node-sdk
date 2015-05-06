@@ -27,7 +27,8 @@ var pl = new Playlyfe({
 });
 ```
 You can use either promises or callbacks
-***Promises***
+
+### Promises
 ```js
 // To get infomation of the player johny
 pl.get('/player',{ player_id: 'johny' }) 
@@ -38,7 +39,7 @@ pl.get('/player',{ player_id: 'johny' })
     console.log('Error');
 });
 ```
-***Callbacks***
+### Callbacks
 ```js
 pl.get('/player', { player_id: 'johny' }, false, function(err, player) {
     if(err) {
@@ -48,7 +49,7 @@ pl.get('/player', { player_id: 'johny' }, false, function(err, player) {
 });
 ```
 
-## Using
+## Usage
 ### Create a client
   If you haven't created a client for your game yet just head over to [Playlyfe](http://playlyfe.com) and login into your account, and go to the game settings and click on client
   **1.Client Credentials Flow**
@@ -130,7 +131,7 @@ var pl = new Playlyfe({
 });
 ```
 
-**API**
+## API
 All these methods return a bluebird Promise if you don't pass a callback.
 
 ```js
