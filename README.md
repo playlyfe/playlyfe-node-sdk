@@ -165,8 +165,8 @@ var pl = new Playlyfe({
 
 ## API
 All these methods return a bluebird Promise if you don't pass a callback.
-All these methods return a the request data only when full_response is false
-but return `headers`, `status`, `body` when full_response is true.
+All these methods return the request data only when full_response is false
+but return `headers`, `status`, `body` of the response when full_response is true.
 
 ```js
 api(method, route, query, body, full_response = false, callback = null)

@@ -62,7 +62,7 @@ class Playlyfe
         Promise.resolve({
           headers: response.headers
           status: response.statusCode
-          body: res_body
+          body: response.body
         })
       else
         Promise.resolve(res_body)
