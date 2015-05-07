@@ -107,11 +107,11 @@ var pl = new Playlyfe({
     redirect_uri: 'The url to redirect to', //only for auth code flow
     store: function(access_token, done) {
         // The function which will persist the access token to a database. You have to persist the token to a database if you want the access token to remain the same in every request
-        done(null, access_token)
+        done(null, access_token);
     }, 
     load: function(done) {
         // The function which will load the access token. This is called internally by the sdk on every request so the the access token can be persisted between requests
-       done(null, access_token)
+       done(null, access_token);
     }
 });
 ```
@@ -130,13 +130,15 @@ var pl = new Playlyfe({
     version: 'v1',
     store: function(access_token, done) {
         redis.hmset("access_token", access_token)
-        .then (access_token) ->
-            done(null, access_token)
+        .then(function(access_token) {
+            done(null, access_token);
+        });
     }, 
     load: function(done) {
         redis.hmgetall("access_token")
-        .then (access_token) ->
-            done(null, access_token)
+        .then(function(access_token) {
+            done(null, access_token);
+        });
     }
 });
 ```
