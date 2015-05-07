@@ -2,6 +2,24 @@ request = require 'request-promise'
 Promise = require 'bluebird'
 _ = require 'lodash'
 
+class PlaylyfeException extends Error
+
+  constructor: (@name, @message, @status = 500, @errors) ->
+    Error.call @
+    Error.captureStackTrace @, @constructor
+    return
+
+  handle: (res) ->
+    error =
+      error: @name
+      error_description: @message
+    if @errors?
+      error.data = @errors
+    res.statusCode = @status
+    res.body = error
+    res.status(@status).json error
+    return
+
 class Playlyfe
 
   constructor: (@options) ->
@@ -16,30 +34,68 @@ class Playlyfe
       Promise.resolve()
     @options.load ?= =>
       Promise.resolve(@access_token)
+    @endpoint = "https://api.playlyfe.com/#{@options.version}"
     return
 
   getAuthorizationURI: ->
     "https://playlyfe.com/auth?#{require("querystring").stringify({response_type: 'code', redirect_uri: @options.redirect_uri, client_id: @options.client_id })}"
 
-  makeRequest: (url, method, query, body, raw=false) ->
+  makeRequest: (method, url, query, body, cb) ->
+    data = {
+      url: url
+      method: method.toUpperCase()
+      qs: query
+      strictSSL: @options.strictSSL
+      encoding: 'utf8'
+      json: true
+    }
+    if body?
+      data.body = body
+    request(data)
+    .catch (err) =>
+      if typeof err.response?.body is 'object' and err.response.body.error?
+        if err.response.body.error is 'invalid_access_token'
+          @getAccessToken()
+          .then =>
+            @api(method, url.replace(@endpoint, ''), query, body, cb)
+        else
+          Promise.reject(new PlaylyfeException(err.response.body.error, err.response.body.error_description, err.response.statusCode))
+      else
+        Promise.reject(err)
+
+  makeProxy: (method, url, query, body, cb) ->
     request({
       url: url
       method: method.toUpperCase()
       qs: query
       headers: 'Content-Type': 'application/json'
-      body: body
+      body: JSON.stringify(body)
       strictSSL: @options.strictSSL
-      encoding: 'utf8'
-      json: not raw
+      encoding: null
+      resolveWithFullResponse: true
     })
-    .catch (err) ->
-      if typeof err.response?.body is 'object'
-        Promise.reject(err.response.body)
+    .then (response) ->
+      Promise.resolve(response)
+    .catch (err) =>
+      if typeof err.response?.body
+        try
+          json = JSON.parse(err.response.body.toString())
+          if json.error?
+            if json.error is 'invalid_access_token'
+              @getAccessToken()
+              .then =>
+                @apiProxy(method, url.replace(@endpoint, ''), query, body, cb)
+            else
+              Promise.reject(new PlaylyfeException(json.error, json.error_description, err.response.statusCode))
+          else
+            Promise.reject(err)
+        catch
+          Promise.reject(err)
       else
         Promise.reject(err)
 
   makeTokenRequest: (body) ->
-    @makeRequest('https://playlyfe.com/auth/token', 'POST', {}, body)
+    @makeRequest('POST', 'https://playlyfe.com/auth/token', {}, body)
     .then (token) =>
       token.expires_at = new Date(new Date().getTime() + (parseInt(token.expires_in) * 1000))
       @options.store(token)
@@ -70,7 +126,7 @@ class Playlyfe
     else
       @makeTokenRequest(body)
 
-  api: (method, url, query = {}, body = {}, raw=false, cb=null) ->
+  checkAccessToken: (query) ->
     if @options.player_id then query.player_id = @options.player_id
     @options.load()
     .then (token) =>
@@ -85,15 +141,31 @@ class Playlyfe
         Promise.resolve(token)
     .then (token) =>
       query.access_token = token.access_token
+      Promise.resolve()
+
+  api: (method, url, query = {}, body = {}, cb=null) ->
+    @checkAccessToken(query)
+    .then =>
       if cb?
-        @makeRequest("https://api.playlyfe.com/#{@options.version}#{url}", method, query, body, raw).nodeify(cb)
+        @makeRequest(method, "#{@endpoint}#{url}", query, body, cb).nodeify(cb)
       else
-        @makeRequest("https://api.playlyfe.com/#{@options.version}#{url}", method, query, body, raw)
+        @makeRequest(method, "#{@endpoint}#{url}", query, body)
 
-  get: (url, query, raw, cb) -> @api('GET', url, query, {}, raw, cb)
-  post: (url, query, body, cb) -> @api('POST', url, query, body, false, cb)
-  patch: (url, query, body, cb) -> @api('PATCH', url, query, body, false, cb)
-  put: (url, query, body, cb) -> @api('PUT', url, query, body, false, cb)
-  delete: (url, query, cb) -> @api('DELETE', url, query, {}, false, cb)
+  apiProxy: (method, url, query = {}, body = {}, cb=null) ->
+    @checkAccessToken(query)
+    .then =>
+      if cb?
+        @makeProxy(method, "#{@endpoint}#{url}", query, body, cb).nodeify(cb)
+      else
+        @makeProxy(method, "#{@endpoint}#{url}", query, body)
 
-module.exports = Playlyfe
+  get: (url, query, cb) -> @api('GET', url, query, null, cb)
+  post: (url, query, body, cb) -> @api('POST', url, query, body, cb)
+  patch: (url, query, body, cb) -> @api('PATCH', url, query, body, cb)
+  put: (url, query, body, cb) -> @api('PUT', url, query, body, cb)
+  delete: (url, query, cb) -> @api('DELETE', url, query, null, cb)
+
+module.exports = {
+  Playlyfe: Playlyfe
+  PlaylyfeException: PlaylyfeException
+}

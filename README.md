@@ -18,7 +18,8 @@ npm install playlyfe
 
 The Playlyfe class allows you to make rest api calls like GET, POST, .. etc
 ```js
-var Playlyfe =  require('playlyfe')
+var Playlyfe = require('playlyfe').Playlyfe;
+var PlaylyfeException = require('playlyfe').PlaylyfeException;
 var pl = new Playlyfe({
     type: 'client'
     version: 'v1',
@@ -35,8 +36,14 @@ pl.get('/player',{ player_id: 'johny' })
 .then(function(player) {
     console.log(player);
 })
-.catch(function() {
-    console.log('Error');
+.catch(PlaylyfeException, function(err) {
+    console.log('Name', err.name);
+    console.log('Message', err.message);
+    console.log('Status', err.status);
+})
+.catch(function(err) {
+    console.log(err);
+    console.log(err.response);
 });
 
 pl.post("/definitions/processes/collect", { 'player_id': 'johny' }, { 'name': 'My First Process' })
@@ -47,7 +54,7 @@ pl.post("/definitions/processes/collect", { 'player_id': 'johny' }, { 'name': 'M
 ```
 ### Callbacks
 ```js
-pl.get('/player', { player_id: 'johny' }, false, function(err, player) {
+pl.get('/player', { player_id: 'johny' }, function(err, player) {
     if(err) {
      console.log('Error');
     }
@@ -75,7 +82,8 @@ And then note down the client id and client secret you will need it later for us
 ## 1. Client Credentials Flow
 A typical express application should contain something like this
 ```js
-var Playlyfe =  require('playlyfe')
+var Playlyfe = require('playlyfe').Playlyfe;
+var PlaylyfeException = require('playlyfe').PlaylyfeException;
 var pl = new Playlyfe({
     type: 'client'
     version: 'v1',
@@ -85,7 +93,8 @@ var pl = new Playlyfe({
 ```
 ## 2. Authorization Code Flow
 ```js
-var Playlyfe =  require('playlyfe')
+var Playlyfe = require('playlyfe').Playlyfe;
+var PlaylyfeException = require('playlyfe').PlaylyfeException;
 var pl = new Playlyfe({
     type: 'code'
     version: 'v1',
@@ -105,7 +114,8 @@ atleast once. After this you can make any requests as the user has to be authent
 # Documentation
 You can initiate a client by giving the client_id and client_secret params
 ```js
-var Playlyfe = require('playlyfe');
+var Playlyfe = require('playlyfe').Playlyfe;
+var PlaylyfeException = require('playlyfe').PlaylyfeException;
 var pl = new Playlyfe({
     type: 'client' or 'code',
     client_id: 'Your client id',
@@ -126,7 +136,8 @@ var pl = new Playlyfe({
 In development the sdk caches the access token in memory so you dont need to provide the store and load functions. But in production it is highly recommended to persist the token to a database. It is very simple and easy to do it with redis. You can see the test cases for more examples.
 
 ```js
-var Playlyfe = require('playlyfe');
+var Playlyfe = require('playlyfe').Playlyfe;
+var PlaylyfeException = require('playlyfe').PlaylyfeException;
 var redis = require('ioredis');
 var Promise = require('bluebird');
 
@@ -153,11 +164,11 @@ var pl = new Playlyfe({
 All these methods return a bluebird Promise if you don't pass a callback.
 
 ```js
-api(method, route, query, body, raw, callback)
+api(method, route, query, body, callback)
 ```
 **Get**
 ```js
-get(route, query, raw, callback)
+get(route, query, callback)
 ```
 **Post**
 ```js
@@ -187,7 +198,8 @@ exchangeCode(code)
 //Before any request to the playlyfe api is made this has to be called atleast once.
 //This should be called in the the route/controller which you specified in your redirect_uri
 ```
-
+**Errors**  
+A ```PlaylyfeException``` is thrown whenever an error occurs in each call.The Error contains a `name`, `message` and `status` field which can be used to determine the type of error that occurred.
 
 License
 =======
