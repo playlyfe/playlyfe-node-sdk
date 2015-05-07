@@ -28,18 +28,24 @@ class Playlyfe
     if @options.type is 'code' and _.isUndefined @options.redirect_uri then throw new Error('You must pass in a redirect_uri for authoriztion code flow')
     if _.isUndefined @options.version then throw new Error( 'You must pass in version of the API you would like to use which can be v1 or v2')
     @options.strictSSL ?= true
-    @options.store ?= (access_token) =>
+    @options.store ?= (access_token, done) =>
       @access_token = access_token
-      Promise.resolve()
-    @options.load ?= =>
-      Promise.resolve(@access_token)
+      done(null, @access_token)
+    @options.load ?= (done) =>
+      done(null, @access_token)
     @endpoint = "https://api.playlyfe.com/#{@options.version}"
     return
+
+  _done: (err, result) ->
+    if err
+      Promise.reject(err)
+    else
+      Promise.resolve(result)
 
   getAuthorizationURI: ->
     "https://playlyfe.com/auth?#{require("querystring").stringify({response_type: 'code', redirect_uri: @options.redirect_uri, client_id: @options.client_id })}"
 
-  makeRequest: (method, url, query, body, full_response = false, cb) ->
+  makeRequest: (method, url, query, body, full_response = false) ->
     data = {
       url: url
       method: method.toUpperCase()
@@ -72,7 +78,7 @@ class Playlyfe
         if res_body.error is 'invalid_access_token'
           @getAccessToken()
           .then =>
-            @api(method, url.replace(@endpoint, ''), query, body, full_response, cb)
+            @api(method, url.replace(@endpoint, ''), query, body, full_response)
         else
           Promise.reject(new PlaylyfeException(res_body.error, res_body.error_description, err.response.statusCode, err.response.headers, res_body.data))
       else
@@ -82,7 +88,7 @@ class Playlyfe
     @makeRequest('POST', 'https://playlyfe.com/auth/token', {}, body)
     .then (token) =>
       token.expires_at = new Date(new Date().getTime() + (parseInt(token.expires_in) * 1000))
-      @options.store(token)
+      @options.store(token, @_done)
       .then ->
         Promise.resolve(token)
 
@@ -96,7 +102,7 @@ class Playlyfe
       grant_type: 'client_credentials'
     }
     if @options.type is 'code'
-      @options.load()
+      @options.load(@_done)
       .then (token) =>
         if token?
           body.grant_type = 'refresh_token'
@@ -112,7 +118,7 @@ class Playlyfe
 
   checkAccessToken: (query) ->
     if @options.player_id then query.player_id = @options.player_id
-    @options.load()
+    @options.load(@_done)
     .then (token) =>
       unless token?
         if @options.type is 'code'
@@ -127,19 +133,16 @@ class Playlyfe
       query.access_token = token.access_token
       Promise.resolve()
 
-  api: (method, url, query = {}, body = {}, full_response = false, cb=null) ->
+  api: (method, url, query = {}, body = {}, full_response = false) ->
     @checkAccessToken(query)
     .then =>
-      if cb?
-        @makeRequest(method, "#{@endpoint}#{url}", query, body, full_response, cb).nodeify(cb)
-      else
-        @makeRequest(method, "#{@endpoint}#{url}", query, body, full_response)
+      @makeRequest(method, "#{@endpoint}#{url}", query, body, full_response)
 
-  get: (url, query, full_response, cb) -> @api('GET', url, query, null, full_response, cb)
-  post: (url, query, body, full_response, cb) -> @api('POST', url, query, body, full_response, cb)
-  patch: (url, query, body, full_response, cb) -> @api('PATCH', url, query, body, full_response, cb)
-  put: (url, query, body, full_response, cb) -> @api('PUT', url, query, body, full_response, cb)
-  delete: (url, query, full_response, cb) -> @api('DELETE', url, query, null, full_response, cb)
+  get: (url, query, full_response) -> @api('GET', url, query, null, full_response)
+  post: (url, query, body, full_response) -> @api('POST', url, query, body, full_response)
+  patch: (url, query, body, full_response) -> @api('PATCH', url, query, body, full_response)
+  put: (url, query, body, full_response) -> @api('PUT', url, query, body, full_response)
+  delete: (url, query, full_response) -> @api('DELETE', url, query, null, full_response)
 
 module.exports = {
   Playlyfe: Playlyfe

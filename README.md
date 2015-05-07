@@ -26,11 +26,7 @@ var pl = new Playlyfe({
     client_id: "Your client id",
     client_secret: "Your client secret"
 });
-```
-You can use either promises or callbacks
 
-### Promises
-```js
 // To get infomation of the player johny
 pl.get('/player',{ player_id: 'johny' }) 
 .then(function(player) {
@@ -51,22 +47,6 @@ pl.post("/definitions/processes/collect", { 'player_id': 'johny' }, { 'name': 'M
     console.log(process);
 });
 
-```
-### Callbacks
-```js
-pl.get('/player', { player_id: 'johny' }, false, function(err, player) {
-    if(err) {
-     console.log('Error');
-    }
-    console.log(player);
-});
-
-pl.post("/definitions/processes/collect", { 'player_id': 'johny' }, { 'name': 'My First Process' }, false, function(err, process) {
-    if(err) {
-     console.log('Error');
-    }
-    console.log(process);
-});
 ```
 
 ## Usage
@@ -125,12 +105,13 @@ var pl = new Playlyfe({
     client_secret: 'Your client Secret',
     version: 'v1',
     redirect_uri: 'The url to redirect to', //only for auth code flow
-    store: function(access_token) {
+    store: function(access_token, done) {
         // The function which will persist the access token to a database. You have to persist the token to a database if you want the access token to remain the same in every request
+        done(null, access_token)
     }, 
-    load: function() {
+    load: function(done) {
         // The function which will load the access token. This is called internally by the sdk on every request so the the access token can be persisted between requests
-        //return the access_token here
+       done(null, access_token)
     }
 });
 ```
@@ -141,68 +122,58 @@ In development the sdk caches the access token in memory so you dont need to pro
 var Playlyfe = require('playlyfe').Playlyfe;
 var PlaylyfeException = require('playlyfe').PlaylyfeException;
 var redis = require('ioredis');
-var Promise = require('bluebird');
 
 var pl = new Playlyfe({
     type: 'client' or 'code',
     client_id: 'Your client id',
     client_secret: 'Your client Secret',
     version: 'v1',
-    store: function(access_token) {
+    store: function(access_token, done) {
         redis.hmset("access_token", access_token)
-        .then ->
-            Promise.resolve()
+        .then (access_token) ->
+            done(null, access_token)
     }, 
-    load: function() {
+    load: function(done) {
         redis.hmgetall("access_token")
         .then (access_token) ->
-            Promise.resolve(access_token)
+            done(null, access_token)
     }
 });
 ```
 
-## API
-All these methods return a bluebird Promise if you don't pass a callback.
+## Methods
+All these methods return a bluebird Promise.
 All these methods return the request data only when full_response is false
 but return `headers`, `status`, `body` of the response when full_response is true.
 
-```js
-api(method, route, query, body, full_response = false, callback = null)
-```
-**Get**
-```js
-get(route, query, full_response = false, callback = null)
-```
-**Post**
-```js
-post(route, query, body, full_response = false, callback = null)
-```
-**Patch**
-```js
-patch(route, query, body, full_response = false, callback = null)
-```
-**Put**
-```js
-put(route, query, body, full_response = false, callback = null)
-```
-**Delete**
-```js
-delete(route, query, full_response = false, callback = null)
-```
-**Get Login Url**
-```js
-getAuthorizationURI()
-//This will return the url to which the user needs to be redirected to login.
-```
-***Exchange Code***
-```js
-exchangeCode(code)
-//This is used in the auth code flow so that the sdk can get the access token.
-//Before any request to the playlyfe api is made this has to be called atleast once.
-//This should be called in the the route/controller which you specified in your redirect_uri
-```
-**Errors**  
-A ```PlaylyfeException``` is thrown whenever an error occurs in each call.The Error contains a `name`, `message`, `status`, `headers` and `data` field which can be used to determine the type of error that occurred.
+**api (method, route, query, body, full_response = false)**
+This will allow you to make any HTTP method request to the Playlyfe API
+
+**get (route, query, full_response = false)**
+This will make a GET request to the Playlyfe API
+
+**post (route, query, body, full_response = false)**
+This will make a POST request to the Playlyfe API
+
+**patch (route, query, body, full_response = false)**
+This will make a PATCH request to the Playlyfe API
+
+**put (route, query, body, full_response = false)**
+This will make a PUT request to the Playlyfe API
+
+**delete (route, query, full_response = false)**
+This will make a DELETE request to the Playlyfe API
+
+**getAuthorizationURI ()**
+This will return the url to which the user needs to be redirected to login.
+This doesn't need
+
+**exchangeCode (code)**
+This is used in the auth code flow so that the sdk can get the access token.
+Before any request to the playlyfe api is made this has to be called atleast once.This should be called in the the route/controller which you specified in your redirect_uri.
+
+**PlaylyfeException**  
+This is thrown whenever an error occurs in each call. The Error contains the `name`, `message`, `status`, `headers` and `data` fields which can be used to determine the type of error that occurred.
 
 License
 =======

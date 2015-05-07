@@ -4,14 +4,16 @@ Promise = require 'bluebird'
 
 player = { player_id: 'student1' }
 access_token = null
+client_id = "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4"
+client_secret = "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3"
 
 describe 'The SDK Options and Flow', ->
 
   it 'should check whether right options are passed', (next) ->
     try
       pl = new Playlyfe({
-        client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
-        client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
+        client_id: client_id
+        client_secret: client_secret
         redirect_uri: 'https://playlyfe.com/mygame'
       })
     catch err
@@ -19,16 +21,16 @@ describe 'The SDK Options and Flow', ->
       try
         pl = new Playlyfe({
           type: 'code'
-          client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
-          client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
+          client_id: client_id
+          client_secret: client_secret
         })
       catch err
         assert.equal err.message, 'You must pass in a redirect_uri for authoriztion code flow'
         try
           pl = new Playlyfe({
             type: 'code'
-            client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
-            client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
+            client_id: client_id
+            client_secret: client_secret
             redirect_uri: 'https://playlyfe.com/mygame'
           })
         catch err
@@ -38,16 +40,16 @@ describe 'The SDK Options and Flow', ->
   it 'should reload the access token', (next) ->
     pl = new Playlyfe({
       type: 'client',
-      client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
-      client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
+      client_id: client_id
+      client_secret: client_secret
       version: 'v1'
-      store: (token) ->
-        console.log 'Storing' # Storing is called only once
+      store: (token, done) ->
+        console.log 'Storing' # Storing is called once
         access_token = token
-        Promise.resolve(access_token)
-      load: ->
+        done(null, access_token)
+      load: (done) ->
         console.log 'Loading'
-        Promise.resolve(access_token)
+        done(null, access_token)
     })
     pl.get('/gege', player)
     .catch PlaylyfeException, (err) =>
@@ -60,18 +62,18 @@ describe 'The SDK Options and Flow', ->
   it 'should refresh an access token in client credential flow', (next) ->
     pl = new Playlyfe({
       type: 'client',
-      client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
-      client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
+      client_id: client_id
+      client_secret: client_secret
       version: 'v1'
-      store: (token) ->
+      store: (token, done) ->
         console.log 'Storing'
         access_token = token
-        Promise.resolve(access_token)
-      load: ->
+        done(null, access_token)
+      load: (done) ->
         console.log 'Loading'
         if access_token? # It calls storing twice since the access token is force expired
           access_token.expires_at = new Date(new Date().getTime() - 50 * 1000)
-        Promise.resolve(access_token)
+        done(null, access_token)
     })
     pl.get('/gege', player)
     .catch PlaylyfeException, (err) =>
@@ -84,8 +86,8 @@ describe 'The SDK Options and Flow', ->
   it 'should check the login uri', (next) ->
     pl = new Playlyfe({
       type: 'code',
-      client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
-      client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
+      client_id: client_id
+      client_secret: client_secret
       version: 'v1'
       redirect_uri: 'https://playlyfe.com/mygame'
     })
@@ -104,16 +106,16 @@ describe 'The SDK Options and Flow', ->
     access_token = { access_token: "ABCDEFD", expires_at: new Date(new Date().getTime() + 86400), expires_in: 86400, type: 'Bearer' }
     pl = new Playlyfe({
       type: 'client',
-      client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
-      client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
+      client_id: client_id
+      client_secret: client_secret
       version: 'v1'
-      store: (token) ->
+      store: (token, done) ->
         console.log 'Storing'
         access_token = token
-        Promise.resolve(access_token)
-      load: ->
+        done(null, access_token)
+      load: (done) ->
         console.log 'Loading'
-        Promise.resolve(access_token)
+        done(null, access_token)
     })
     pl.get('/player', player)
     .then (data) ->
@@ -127,8 +129,8 @@ describe 'The SDK Errors', ->
   before (next) ->
     @pl = new Playlyfe({
       type: 'client',
-      client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
-      client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
+      client_id: client_id
+      client_secret: client_secret
       version: 'v1'
     })
     next()
@@ -161,7 +163,6 @@ describe 'The SDK Errors', ->
     .then (data) =>
       @pl.get("/assets/game", player, true)
     .then (data) =>
-      console.log data
       next()
 
   it 'should get a network error', (next) ->
@@ -185,8 +186,8 @@ describe 'The v1 API', ->
   before (next) ->
     @pl = new Playlyfe({
       type: 'client',
-      client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
-      client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
+      client_id: client_id
+      client_secret: client_secret
       version: 'v1'
       player_id: 'student1'
     })
@@ -234,8 +235,8 @@ describe 'The v2 API', ->
   before (next) ->
     @pl = new Playlyfe({
       type: 'client',
-      client_id: "Zjc0MWU0N2MtODkzNS00ZWNmLWEwNmYtY2M1MGMxNGQ1YmQ4",
-      client_secret: "YzllYTE5NDQtNDMwMC00YTdkLWFiM2MtNTg0Y2ZkOThjYTZkMGIyNWVlNDAtNGJiMC0xMWU0LWI2NGEtYjlmMmFkYTdjOTI3",
+      client_id: client_id
+      client_secret: client_secret
       version: 'v2'
     });
     next()
@@ -243,11 +244,6 @@ describe 'The v2 API', ->
   it 'should read all players', (next) ->
     @pl.get('/admin/players')
     .then (players) ->
-      assert(players.data.length > 0)
-      next()
-
-  it 'should read all players with callback', (next) ->
-    @pl.get '/admin/players', {}, false, (err, players) ->
       assert(players.data.length > 0)
       next()
 
