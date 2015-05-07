@@ -106,11 +106,15 @@ var pl = new Playlyfe({
     version: 'v1',
     redirect_uri: 'The url to redirect to', //only for auth code flow
     store: function(access_token, done) {
-        // The function which will persist the access token to a database. You have to persist the token to a database if you want the access token to remain the same in every request
+        // The function which will persist the access token to a database.
+        //You  have to persist the token to a database if you want the access
+        //token to remain the same in every request
         done(null, access_token);
     }, 
     load: function(done) {
-        // The function which will load the access token. This is called internally by the sdk on every request so the the access token can be persisted between requests
+        // The function which will load the access token. This is called 
+        //internally by the sdk on every request so the the access token can 
+        //be  persisted between requests
        done(null, access_token);
     }
 });
@@ -148,29 +152,29 @@ All these methods return a bluebird Promise.
 All these methods return the request data only when full_response is false
 but return `headers`, `status`, `body` of the response when full_response is true.
 
-**api (method, route, query, body, full_response = false)**
+**api (method, route, query, body, full_response = false)**  
 This will allow you to make any HTTP method request to the Playlyfe API
 
-**get (route, query, full_response = false)**
+**get (route, query, full_response = false)**  
 This will make a GET request to the Playlyfe API
 
-**post (route, query, body, full_response = false)**
+**post (route, query, body, full_response = false)**  
 This will make a POST request to the Playlyfe API
 
-**patch (route, query, body, full_response = false)**
+**patch (route, query, body, full_response = false)**  
 This will make a PATCH request to the Playlyfe API
 
-**put (route, query, body, full_response = false)**
+**put (route, query, body, full_response = false)**  
 This will make a PUT request to the Playlyfe API
 
-**delete (route, query, full_response = false)**
+**delete (route, query, full_response = false)**  
 This will make a DELETE request to the Playlyfe API
 
-**getAuthorizationURI ()**
+**getAuthorizationURI ()**  
 This will return the url to which the user needs to be redirected to login.
 This doesn't need
 
-**exchangeCode (code)**
+**exchangeCode (code)**  
 This is used in the auth code flow so that the sdk can get the access token.
 Before any request to the playlyfe api is made this has to be called atleast once.This should be called in the the route/controller which you specified in your redirect_uri.
 
