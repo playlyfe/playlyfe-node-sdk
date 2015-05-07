@@ -51,7 +51,7 @@ pl.post("/definitions/processes/collect", { 'player_id': 'johny' }, { 'name': 'M
 
 ## Usage
 ### Create a client
-  If you haven't created a client for your game yet just head over to [Playlyfe](http://playlyfe.com) and login into your account, and go to the game settings and click on client
+  If you haven't created a client for your game yet just head over to [Playlyfe](http://playlyfe.com) and login into your account, and go to the game settings and click on client  
   **1.Client Credentials Flow**
     In the client page click on whitelabel client
     ![Creating a Whitelabel Client](./images/client.png "Creating a Whitelabel Client")
@@ -106,13 +106,13 @@ var pl = new Playlyfe({
     version: 'v1',
     redirect_uri: 'The url to redirect to', //only for auth code flow
     store: function(access_token, done) {
-        // The function which will persist the access token to a database.
+        //This function which will persist the access token to a database.
         //You  have to persist the token to a database if you want the access
         //token to remain the same in every request
         done(null, access_token);
     }, 
     load: function(done) {
-        // The function which will load the access token. This is called 
+        //This function which will load the access token. This is called 
         //internally by the sdk on every request so the the access token can 
         //be  persisted between requests
        done(null, access_token);
