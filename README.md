@@ -131,8 +131,7 @@ var pl = new Playlyfe({
     load: function() {
         // The function which will load the access token. This is called internally by the sdk on every request so the the access token can be persisted between requests
         //return the access_token here
-    }, 
-    strictSSL: true
+    }
 });
 ```
 
@@ -158,8 +157,7 @@ var pl = new Playlyfe({
         redis.hmgetall("access_token")
         .then (access_token) ->
             Promise.resolve(access_token)
-    }, 
-    strictSSL: true
+    }
 });
 ```
 
