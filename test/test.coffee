@@ -116,12 +116,8 @@ describe 'The SDK Options and Flow', ->
         Promise.resolve(access_token)
     })
     pl.get('/player', player)
-    .then (response) ->
-      console.log response
-    .catch PlaylyfeException, (err) =>
-      assert.equal(err.name, 'route_not_found')
-      assert.equal(err.message, 'This route does not exist')
-      assert.equal(err.status, 404)
+    .then (data) ->
+      assert.equal(data.id, 'student1')
       next()
 
   it.skip 'should refresh an invalid access token in authorization code flow', (next) ->
@@ -136,6 +132,16 @@ describe 'The SDK Errors', ->
       version: 'v1'
     })
     next()
+
+  it 'should display validation errors', (next) ->
+    @pl.get('/assets/players/:gs', player)
+    .catch PlaylyfeException, (err) =>
+      assert.equal(err.name, 'validation_exception')
+      assert.equal(err.message, 'Invalid request')
+      assert.equal(err.status, 400)
+      assert(err.headers isnt null)
+      assert.equal(err.errors.valid, false)
+      next()
 
   it 'should get an error on unknown route', (next) ->
     @pl.get('/gege', player)
@@ -153,32 +159,9 @@ describe 'The SDK Errors', ->
       assert.equal(err.status, 404)
       @pl.get("/assets/game", player)
     .then (data) =>
-      # console.log data
       @pl.get("/assets/game", player, true)
     .then (data) =>
       console.log data
-      next()
-
-  it 'should get an error on unknown route using proxy', (next) ->
-    @pl.apiProxy('GET', '/gege', player)
-    .catch PlaylyfeException, (err) =>
-      assert.equal(err.name, 'route_not_found')
-      assert.equal(err.message, 'This route does not exist')
-      assert.equal(err.status, 404)
-      @pl.apiProxy('GET', '/player', player)
-    .then (response) =>
-      assert.equal(response.headers['content-type'], 'application/json; charset=utf-8')
-      assert.equal(response.statusCode, 200)
-      assert.equal(JSON.parse(response.body)['alias'], 'Student1')
-      @pl.apiProxy('GET', "/assets/game", player)
-    .then (response) =>
-      assert.equal(response.headers['content-type'], 'image/png')
-      assert.equal(response.statusCode, 200)
-      @pl.apiProxy('GET', "/assets/players/#{player.id}", player)
-    .catch PlaylyfeException, (err) ->
-      assert.equal(err.name, 'image_not_found')
-      assert.equal(err.message, 'The player has no display image')
-      assert.equal(err.status, 404)
       next()
 
   it 'should get a network error', (next) ->
@@ -189,26 +172,12 @@ describe 'The SDK Errors', ->
     .catch (err) =>
       assert.equal(err.name, 'StatusCodeError')
       assert.equal(err.statusCode, 400)
-      @pl.apiProxy('GET', '/gege', player)
+      @pl.api('GET', '/gege', player)
     .catch PlaylyfeException, (err) =>
       console.log 'PlaylyfeException Occured'
     .catch (err) =>
       assert.equal(err.name, 'StatusCodeError')
       assert.equal(err.statusCode, 400)
-      next()
-
-  it 'should get a network error for wrong domain', (next) ->
-    @pl.endpoint = "https://api.playlyfed.com"
-    @pl.get('/gege', player)
-    .catch PlaylyfeException, (err) =>
-      console.log 'PlaylyfeException Occured'
-    .catch (err) =>
-      assert.equal(err.name, 'RequestError')
-      @pl.apiProxy('GET', '/gege', player)
-    .catch PlaylyfeException, (err) =>
-      console.log 'PlaylyfeException Occured'
-    .catch (err) =>
-      assert.equal(err.name, 'RequestError')
       next()
 
 describe 'The v1 API', ->
@@ -278,7 +247,7 @@ describe 'The v2 API', ->
       next()
 
   it 'should read all players with callback', (next) ->
-    @pl.get '/admin/players', {}, (err, players) ->
+    @pl.get '/admin/players', {}, false, (err, players) ->
       assert(players.data.length > 0)
       next()
 

@@ -54,14 +54,17 @@ pl.post("/definitions/processes/collect", { 'player_id': 'johny' }, { 'name': 'M
 ```
 ### Callbacks
 ```js
-pl.get('/player', { player_id: 'johny' }, function(err, player) {
+pl.get('/player', { player_id: 'johny' }, false, function(err, player) {
     if(err) {
      console.log('Error');
     }
     console.log(player);
 });
 
-pl.post("/definitions/processes/collect", { 'player_id': 'johny' }, { 'name': 'My First Process' }, function(err, process) {
+pl.post("/definitions/processes/collect", { 'player_id': 'johny' }, { 'name': 'My First Process' }, false, function(err, process) {
+    if(err) {
+     console.log('Error');
+    }
     console.log(process);
 });
 ```
@@ -162,29 +165,31 @@ var pl = new Playlyfe({
 
 ## API
 All these methods return a bluebird Promise if you don't pass a callback.
+All these methods return a the request data only when full_response is false
+but return `headers`, `status`, `body` when full_response is true.
 
 ```js
-api(method, route, query, body, callback)
+api(method, route, query, body, full_response = false, callback = null)
 ```
 **Get**
 ```js
-get(route, query, callback)
+get(route, query, full_response = false, callback = null)
 ```
 **Post**
 ```js
-post(route, query, body, callback)
+post(route, query, body, full_response = false, callback = null)
 ```
 **Patch**
 ```js
-patch(route, query, body, callback)
+patch(route, query, body, full_response = false, callback = null)
 ```
 **Put**
 ```js
-put(route, query, body, callback)
+put(route, query, body, full_response = false, callback = null)
 ```
 **Delete**
 ```js
-delete(route, query, callback)
+delete(route, query, full_response = false, callback = null)
 ```
 **Get Login Url**
 ```js
@@ -199,7 +204,7 @@ exchangeCode(code)
 //This should be called in the the route/controller which you specified in your redirect_uri
 ```
 **Errors**  
-A ```PlaylyfeException``` is thrown whenever an error occurs in each call.The Error contains a `name`, `message` and `status` field which can be used to determine the type of error that occurred.
+A ```PlaylyfeException``` is thrown whenever an error occurs in each call.The Error contains a `name`, `message`, `status`, `headers` and `data` field which can be used to determine the type of error that occurred.
 
 License
 =======
