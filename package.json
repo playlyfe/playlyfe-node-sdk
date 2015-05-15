@@ -1,6 +1,6 @@
 {
   "name": "playlyfe",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Playlyfe SDK for NodeJS",
   "keywords": [
     "playlyfe",
@@ -45,7 +45,8 @@
   "dependencies": {
     "request-promise": "0.4.2",
     "lodash": "2.4.1",
-    "bluebird": "2.9.25"
+    "bluebird": "2.9.25",
+    "jsonwebtoken": "5.0.0"
   },
   "devDependencies": {
     "coffee-script": "1.9.2",

@@ -1,6 +1,7 @@
 {Playlyfe, PlaylyfeException} = require '../src/playlyfe'
 assert = require 'assert'
 Promise = require 'bluebird'
+jwt = require 'jsonwebtoken'
 
 player = { player_id: 'student1' }
 access_token = null
@@ -96,6 +97,35 @@ describe 'The SDK Options and Flow', ->
       pl.getAuthorizationURI()
     )
     next()
+
+  it 'should create a jwt token', (next) ->
+    token = Playlyfe.createJWT({ client_id: client_id, client_secret: client_secret, player_id: 'student1'})
+    try
+      decoded = jwt.verify(token, client_secret)
+    catch err
+      assert.equal(err.name, 'JsonWebTokenError')
+      assert.equal(err.message, 'invalid token')
+      try
+        [cid, token] = token.split(':')
+        decoded = jwt.verify(token, 'wrong_secret')
+      catch err
+        assert.equal(err.name, 'JsonWebTokenError')
+        assert.equal(err.message, 'invalid signature')
+        decoded = jwt.verify(token, client_secret)
+        assert.equal(decoded.player_id, 'student1')
+        next()
+
+  it 'should check for expired jwt', (next) ->
+    token = Playlyfe.createJWT({ client_id: client_id, client_secret: client_secret, player_id: 'student1', expires: 2 })
+    [cid, token] = token.split(':')
+    setTimeout( ->
+      try
+        decoded = jwt.verify(token, client_secret)
+      catch err
+        assert.equal(err.name, 'TokenExpiredError')
+        assert.equal(err.message, 'jwt expired')
+        next()
+    , 5000)
 
   it.skip 'should exchange code', (next) ->
 

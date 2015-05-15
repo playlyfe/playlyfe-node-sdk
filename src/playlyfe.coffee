@@ -1,6 +1,7 @@
 request = require 'request-promise'
 Promise = require 'bluebird'
 _ = require 'lodash'
+jwt = require 'jsonwebtoken'
 
 class PlaylyfeException extends Error
 
@@ -20,6 +21,15 @@ class PlaylyfeException extends Error
     return error
 
 class Playlyfe
+
+  @createJWT: (options) ->
+    {client_id, client_secret, player_id, scopes, expires} = options
+    scopes ?= []
+    expires ?= 3600
+    payload = { player_id: player_id, scopes: scopes }
+    token = jwt.sign(payload, client_secret, { algorithm: 'HS256', expiresInSeconds: expires })
+    token = "#{client_id}:#{token}"
+    token
 
   constructor: (@options) ->
     if _.isUndefined @options then throw new Error('You must pass in options')
@@ -73,7 +83,7 @@ class Playlyfe
       else
         Promise.resolve(res_body)
     .catch (err) =>
-      if /application\/json/.test(err.response.headers['content-type'])
+      if err.response? and /application\/json/.test(err.response.headers['content-type'])
         res_body = JSON.parse(err.response.body.toString())
         if res_body.error is 'invalid_access_token'
           @getAccessToken()
