@@ -54,7 +54,7 @@ pl.post("/definitions/processes/collect", { 'player_id': 'johny' }, { 'name': 'M
 If you haven't created a client for your game yet just head over to [Playlyfe](http://playlyfe.com) and login into your account, and go to the game settings and click on client.
 
 ## 1. Client Credentials Flow
-In the client page select Yes for both the first question
+In the client page select Yes for both the first and second questions
 ![client](https://cloud.githubusercontent.com/assets/1687946/7930229/2c2f14fe-0924-11e5-8c3b-5ba0c10f066f.png)
 ```js
 var Playlyfe = require('playlyfe').Playlyfe;
