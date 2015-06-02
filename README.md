@@ -1,4 +1,4 @@
-![Playlyfe Node SDK](./images/pl-node-sdk.png "Playlyfe Node SDK")
+![Playlyfe Node SDK](https://dev.playlyfe.com/images/assets/pl-node-sdk.png "Playlyfe Node SDK")
 
 Playlyfe Node SDK [![NPM version](https://badge.fury.io/js/playlyfe-node-sdk.svg)](http://badge.fury.io/js/playlyfe-node-sdk)
 =================
