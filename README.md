@@ -56,7 +56,6 @@ If you haven't created a client for your game yet just head over to [Playlyfe](h
 ## 1. Client Credentials Flow
 In the client page select Yes for both the first question
 ![client](https://cloud.githubusercontent.com/assets/1687946/7930229/2c2f14fe-0924-11e5-8c3b-5ba0c10f066f.png)
-A typical express application should contain something like this
 ```js
 var Playlyfe = require('playlyfe').Playlyfe;
 var PlaylyfeException = require('playlyfe').PlaylyfeException;
@@ -67,6 +66,7 @@ var pl = new Playlyfe({
     client_secret: "Your client secret"
 });
 ```
+You just need to create a new Playlyfe Client and then make calls using it.
 ## 2. Authorization Code Flow
 In the client page select yes for the first question and no for the second
 ![auth](https://cloud.githubusercontent.com/assets/1687946/7930231/2c31c1fe-0924-11e5-8cb5-73ca0a002bcb.png)
