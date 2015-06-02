@@ -51,18 +51,11 @@ pl.post("/definitions/processes/collect", { 'player_id': 'johny' }, { 'name': 'M
 
 ## Usage
 ### Create a client
-  If you haven't created a client for your game yet just head over to [Playlyfe](http://playlyfe.com) and login into your account, and go to the game settings and click on client  
-  **1.Client Credentials Flow**
-    In the client page click on whitelabel client
-    ![Creating a Whitelabel Client](./images/client.png "Creating a Whitelabel Client")
-
-  **2.Authorization Code Flow**
-    In the client page click on backend client and specify the redirect uri this will be the url where you will be redirected to get the token
-    ![Creating a Backend Client](./images/auth.png "Creating a Backend Client")
-
-And then note down the client id and client secret you will need it later for using it in the sdk
+If you haven't created a client for your game yet just head over to [Playlyfe](http://playlyfe.com) and login into your account, and go to the game settings and click on client.
 
 ## 1. Client Credentials Flow
+In the client page select Yes for both the first question
+![client](https://cloud.githubusercontent.com/assets/1687946/7930229/2c2f14fe-0924-11e5-8c3b-5ba0c10f066f.png)
 A typical express application should contain something like this
 ```js
 var Playlyfe = require('playlyfe').Playlyfe;
@@ -75,6 +68,8 @@ var pl = new Playlyfe({
 });
 ```
 ## 2. Authorization Code Flow
+In the client page select yes for the first question and no for the second
+![auth](https://cloud.githubusercontent.com/assets/1687946/7930231/2c31c1fe-0924-11e5-8cb5-73ca0a002bcb.png)
 ```js
 var Playlyfe = require('playlyfe').Playlyfe;
 var PlaylyfeException = require('playlyfe').PlaylyfeException;
@@ -94,6 +89,8 @@ exchangeCode(code)
 atleast once. After this you can make any requests as the user has to be authenticated first.
 
 ## 3. Custom Login Flow using JWT(JSON Web Token)
+In the client page select no for the first question and yes for the second
+![jwt](https://cloud.githubusercontent.com/assets/1687946/7930230/2c2f2caa-0924-11e5-8dcf-aed914a9dd58.png)
 ```js
 var token = Playlyfe.createJWT({
     client_id: 'your client_id', 
