@@ -1,6 +1,6 @@
 ![Playlyfe Node SDK](https://dev.playlyfe.com/images/assets/pl-node-sdk.png "Playlyfe Node SDK")
 
-Playlyfe Node SDK [![NPM version](https://badge.fury.io/js/playlyfe-node-sdk.svg)](http://badge.fury.io/js/playlyfe-node-sdk)
+Playlyfe Node SDK [![NPM version](https://badge.fury.io/js/playlyfe.svg)](https://www.npmjs.com/package/playlyfe)
 =================
 
 Playlyfe API implementation in NodeJS. This module integrates seamlessly with the [passport-playlyfe](https://github.com/playlyfe/passport-playlyfe) module for authentication support.
