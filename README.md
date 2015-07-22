@@ -178,6 +178,12 @@ This will make a PUT request to the Playlyfe API
 **delete (route, query, full_response = false)**  
 This will make a DELETE request to the Playlyfe API
 
+**upload (url, query, formData, full_response)**  
+This will upload any formData you want to send to the server like files, images etc.
+Files need to be sent as streams like this,
+`upload("/runtime/player/image", req.query, {file: fs.createReadStream(path) })`
+This uses the [request](https://github.com/request/request) library so the pattern should be the same
+
 **getAuthorizationURI ()**  
 This will return the url to which the user needs to be redirected to login.
 This doesn't need
@@ -191,7 +197,7 @@ This is thrown whenever an error occurs in each call. The Error contains the `na
 
 License
 =======
-Playlyfe NodeJS SDK v0.4.1  
+Playlyfe NodeJS SDK v0.4.2  
 http://dev.playlyfe.com/  
 Copyright(c) 2013-2014, Playlyfe IT Solutions Pvt. Ltd, support@playlyfe.com  
 

@@ -153,6 +153,42 @@ class Playlyfe
   patch: (url, query, body, full_response) -> @api('PATCH', url, query, body, full_response)
   put: (url, query, body, full_response) -> @api('PUT', url, query, body, full_response)
   delete: (url, query, full_response) -> @api('DELETE', url, query, null, full_response)
+  upload: (url, query, formData, full_response) ->
+    data = {
+      url: @endpoint + url
+      qs: query
+      strictSSL: @options.strictSSL
+      encoding: null
+      resolveWithFullResponse: true
+      formData: formData
+    }
+    @checkAccessToken(query)
+    .then =>
+      request.post(data)
+    .then (response) ->
+      if /application\/json/.test(response.headers['content-type'])
+        res_body = JSON.parse(response.body.toString())
+      else
+        res_body = response.body
+      if full_response
+        Promise.resolve({
+          headers: response.headers
+          status: response.statusCode
+          body: response.body
+        })
+      else
+        Promise.resolve(res_body)
+    .catch (err) =>
+      if err.response? and /application\/json/.test(err.response.headers['content-type'])
+        res_body = JSON.parse(err.response.body.toString())
+        if res_body.error is 'invalid_access_token'
+          @getAccessToken()
+          .then =>
+            @api(method, url.replace(@endpoint, ''), query, body, full_response)
+        else
+          Promise.reject(new PlaylyfeException(res_body.error, res_body.error_description, err.response.statusCode, err.response.headers, res_body.data))
+      else
+        Promise.reject(err)
 
 module.exports = {
   Playlyfe: Playlyfe
