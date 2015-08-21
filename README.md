@@ -102,7 +102,7 @@ var token = Playlyfe.createJWT({
 ```
 This is used to create jwt token which can be created when your user is authenticated. This token can then be sent to the frontend and or stored in your session. With this token the user can directly send requests to the Playlyfe API as the player.
 
-# Documentation
+# Client Scopes
 ![Client](https://cloud.githubusercontent.com/assets/1687946/9349193/e00fe91c-465f-11e5-8094-6e03c64a662c.png)
 
 Your client has certain access control restrictions. There are 3 kind of resources in the Playlyfe REST API they are
@@ -117,9 +117,9 @@ The resources accessible to this client can be configured to have a read permiss
 
 The resources accessible to this client can be configured to have a write permission that means only `POST`, `PATCH`, `PUT`, `DELETE` requests will work.
 
-The version restriction is only for the design resource and can be used to restrict the client from accessing any version of the game design other than the one specified. By defeault it allows all
+The version restriction is only for the design resource and can be used to restrict the client from accessing any version of the game design other than the one specified. By default it allows all.
 
-If an access to a route is not allowed and then you make a request then you will get an error like
+If access to a route is not allowed and then you make a request to that route then you will get an error like this,
 ```json
 {
   "error": "access_denied",
@@ -127,6 +127,7 @@ If an access to a route is not allowed and then you make a request then you will
 }
 ```
 
+# Documentation
 You can initiate a client by giving the client_id and client_secret params
 ```js
 var Playlyfe = require('playlyfe').Playlyfe;
