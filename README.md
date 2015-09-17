@@ -197,7 +197,7 @@ This is thrown whenever an error occurs in each call. The Error contains the `na
 
 License
 =======
-Playlyfe NodeJS SDK v0.4.2  
+Playlyfe NodeJS SDK  
 http://dev.playlyfe.com/  
 Copyright(c) 2013-2014, Playlyfe IT Solutions Pvt. Ltd, support@playlyfe.com  
 
