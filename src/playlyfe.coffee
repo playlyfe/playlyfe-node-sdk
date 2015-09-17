@@ -117,7 +117,6 @@ class Playlyfe
         if token?
           body.grant_type = 'refresh_token'
           body.refresh_token = token.refresh_token
-          @makeTokenRequest(body)
         else
           body.grant_type = 'authorization_code'
           body.redirect_uri = @options.redirect_uri
