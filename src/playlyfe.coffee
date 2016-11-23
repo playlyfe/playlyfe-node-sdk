@@ -37,13 +37,15 @@ class Playlyfe
     if not _.contains(['code', 'client'], @options.type) then throw new Error('You must pass in type which can be code or client')
     if @options.type is 'code' and _.isUndefined @options.redirect_uri then throw new Error('You must pass in a redirect_uri for authoriztion code flow')
     if _.isUndefined @options.version then throw new Error( 'You must pass in version of the API you would like to use which can be v1 or v2')
+    @options.auth_endpoint ?= "https://playlyfe.com"
+    @options.api_endpoint ?= "https://api.playlyfe.com"
     @options.strictSSL ?= true
     @options.store ?= (access_token, done) =>
       @access_token = access_token
       done(null, @access_token)
     @options.load ?= (done) =>
       done(null, @access_token)
-    @endpoint = "https://api.playlyfe.com/#{@options.version}"
+    @endpoint = "#{@options.api_endpoint}/#{@options.version}"
     return
 
   _done: (err, result) ->
@@ -53,7 +55,7 @@ class Playlyfe
       Promise.resolve(result)
 
   getAuthorizationURI: ->
-    "https://playlyfe.com/auth?#{require("querystring").stringify({response_type: 'code', redirect_uri: @options.redirect_uri, client_id: @options.client_id })}"
+    "#{@options.auth_endpoint}/auth?#{require("querystring").stringify({response_type: 'code', redirect_uri: @options.redirect_uri, client_id: @options.client_id })}"
 
   makeRequest: (method, url, query, body, full_response = false) ->
     data = {
@@ -95,7 +97,7 @@ class Playlyfe
         Promise.reject(err)
 
   makeTokenRequest: (body) ->
-    @makeRequest('POST', 'https://playlyfe.com/auth/token', {}, body)
+    @makeRequest('POST', "#{@options.auth_endpoint}/auth/token", {}, body)
     .then (token) =>
       token.expires_at = new Date(new Date().getTime() + (parseInt(token.expires_in) * 1000))
       @options.store(token, @_done)
